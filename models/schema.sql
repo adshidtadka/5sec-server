@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS games;
 CREATE TABLE games (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_num INT NOT NULL
-)
+);
 
 DROP TABLE IF EXISTS results;
 CREATE TABLE results (
@@ -10,4 +10,4 @@ CREATE TABLE results (
     game_id INT NOT NULL,
     user_name STRING NOT NULL,
     SCORE INT NOT NULL
-)
+);
