@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
+import configparser
 
 app = Flask(__name__)
 CORS(app)
@@ -15,4 +16,7 @@ def result():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=5001)
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    port = config["DEFAULT"]["port"]
+    app.run(debug=False, host='0.0.0.0', port=port)
