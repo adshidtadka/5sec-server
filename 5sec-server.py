@@ -1,14 +1,17 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/')
+@app.route('/result', methods=["POST"])
 @cross_origin()
-def hello_world():
-    return "Hello World!"
+def result():
+    user_name = request.form["userName"]
+    result = request.form["result"]
+
+    return result
 
 
 if __name__ == '__main__':
