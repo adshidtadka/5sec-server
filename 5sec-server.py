@@ -45,7 +45,7 @@ def create_result():
 def get_result():
     results = g.db.execute("SELECT * FROM results ORDER BY score")
     results_list = [dict(id=row[0], game_id=row[1], user_name=row[2], score=row[3]) for row in results.fetchall()]
-    return {"results": results_list}
+    return {"data": results_list}
 
 
 @app.before_request
