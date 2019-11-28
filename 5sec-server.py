@@ -10,7 +10,7 @@ config.read("config.ini")
 SERVER_NAME = config["DEFAULT"]["server_name"]
 DEBUG = False
 DATABASE = "models/5sec-server.db"
-SECRET_KEY = 'development key'
+# SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
 
