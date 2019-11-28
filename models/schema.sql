@@ -9,5 +9,5 @@ CREATE TABLE results (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     game_id INT NOT NULL,
     user_name STRING NOT NULL,
-    SCORE INT NOT NULL
+    score INT NOT NULL
 );

@@ -1,4 +1,4 @@
-from flask import Flask, request, g
+from flask import Flask, request, g, redirect, url_for
 from flask_cors import CORS, cross_origin
 from contextlib import closing
 import configparser
@@ -32,13 +32,20 @@ def init_db():
 
 @app.route('/result', methods=["POST"])
 @cross_origin()
-def result():
+def create_result():
     user_name = request.form["userName"]
-    result = request.form["result"]
-    print(user_name)
-    g.db.execute("INSERT INTO results(game_id, user_name, score) values (?, ?, ?)", [1, user_name, result])
+    score = request.form["score"]
+    g.db.execute("INSERT INTO results(game_id, user_name, score) values (?, ?, ?)", [1, user_name, score])
     g.db.commit()
-    return result
+    return redirect(url_for("get_result"))
+
+
+@app.route('/result', methods=["GET"])
+@cross_origin()
+def get_result():
+    results = g.db.execute("SELECT * FROM results ORDER BY score")
+    results_list = [dict(id=row[0], game_id=row[1], user_name=row[2], score=row[3]) for row in results.fetchall()]
+    return {"results": results_list}
 
 
 @app.before_request
