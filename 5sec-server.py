@@ -35,7 +35,7 @@ def init_db():
 def create_result():
     user_name = request.form["userName"]
     score = request.form["score"]
-    g.db.execute("INSERT INTO results(game_id, user_name, score) values (?, ?, ?)", [1, user_name, score])
+    g.db.execute("INSERT INTO results(game_id, user_name, score) VALUES (?, ?, ?)", [1, user_name, score])
     g.db.commit()
     return redirect(url_for("get_result"))
 
@@ -46,6 +46,27 @@ def get_result():
     results = g.db.execute("SELECT * FROM results ORDER BY score")
     results_list = [dict(id=row[0], game_id=row[1], user_name=row[2], score=row[3]) for row in results.fetchall()]
     return {"data": results_list}
+
+
+@app.route("/game", methods=["GET"])
+@cross_origin()
+def get_game():
+    game_tuple = g.db.execute("SELECT id, max(start_time), user_num FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
+    if game_tuple[0] == None:
+        return redirect(url_for("create_game"))
+    else:
+        game_dict = dict(id=game_tuple[0], start_time=game_tuple[1], user_num=game_tuple[2])
+        return {"data": game_dict}
+
+
+@app.route("/create", methods=["GET"])
+@cross_origin()
+def create_game():
+    g.db.execute("INSERT INTO games(start_time, user_num) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')), ?)", [1])
+    g.db.commit()
+    game_tuple = g.db.execute("SELECT id, max(start_time), user_num FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
+    game_dict = dict(id=game_tuple[0], start_time=game_tuple[1], user_num=game_tuple[2])
+    return {"data": game_dict}
 
 
 @app.before_request
