@@ -51,7 +51,7 @@ def get_result():
 @app.route("/game", methods=["GET"])
 @cross_origin()
 def get_game():
-    game_tuple = g.db.execute("SELECT id, max(start_time), user_num FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
+    game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
     if game_tuple[0] == None:
         return redirect(url_for("create_game"))
     else:
@@ -59,10 +59,10 @@ def get_game():
         return {"data": game_dict}
 
 
-@app.route("/create", methods=["GET"])
+@app.route("/game", methods=["POST"])
 @cross_origin()
 def create_game():
-    g.db.execute("INSERT INTO games(start_time, user_num) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')), ?)", [1])
+    g.db.execute("INSERT INTO games(start_time) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')), ?)", [1])
     g.db.commit()
     game_tuple = g.db.execute("SELECT id, max(start_time), user_num FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
     game_dict = dict(id=game_tuple[0], start_time=game_tuple[1], user_num=game_tuple[2])
