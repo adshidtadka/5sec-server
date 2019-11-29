@@ -69,6 +69,15 @@ def create_game():
     return {"data": {"game": game_dict}}
 
 
+@app.route("/player", methods=["GET"])
+@cross_origin()
+def get_players():
+    game_id = request.form["gameId"]
+    players = g.db.execute("SELECT id, user_name FROM players WHERE game_id = ?", [game_id])
+    players_list = [dict(id=row[0], user_name=row[1]) for row in players.fetchall()]
+    return {"data": {"players": players_list}}
+
+
 @app.route("/player", methods=["POST"])
 @cross_origin()
 def create_player():
@@ -76,8 +85,7 @@ def create_player():
     game_id = request.form["game_id"]
     g.db.execute("INSERT INTO players(game_id, user_name) VALUES (?, ?)", [game_id, user_name])
     g.db.commit()
-    player_num = g.db.execute("SELECT COUNT(*) FROM players WHERE game_id = ?", [game_id]).fetchone()[0]
-    return {"data": {"player_num": player_num}}
+    return {"data": None}
 
 
 @app.before_request
