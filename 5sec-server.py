@@ -64,9 +64,20 @@ def get_game():
 def create_game():
     g.db.execute("INSERT INTO games(start_time) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')))")
     g.db.commit()
-    game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
+    game_tuple = g.db.execute("SELECT id, max(start_time) FROM games").fetchone()
     game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
-    return {"data": game_dict}
+    return {"data": {"game": game_dict}}
+
+
+@app.route("/player", methods=["POST"])
+@cross_origin()
+def create_player():
+    user_name = request.form["user_name"]
+    game_id = request.form["game_id"]
+    g.db.execute("INSERT INTO players(game_id, user_name) VALUES (?, ?)", [game_id, user_name])
+    g.db.commit()
+    player_num = g.db.execute("SELECT COUNT(*) FROM players WHERE game_id = ?", [game_id]).fetchone()[0]
+    return {"data": {"player_num": player_num}}
 
 
 @app.before_request
