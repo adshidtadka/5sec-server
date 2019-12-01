@@ -77,7 +77,7 @@ def get_player():
     game_id = request.args.get("gameId")
     players = g.db.execute("SELECT id, user_name FROM players WHERE game_id = ?", [game_id])
     players_list = [dict(id=row[0], user_name=row[1]) for row in players.fetchall()]
-    return {"data": {"players": players_list}}
+    return {"players": players_list}
 
 
 @app.route("/player", methods=["POST"])
