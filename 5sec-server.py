@@ -73,9 +73,8 @@ def create_game():
 
 @app.route("/player", methods=["GET"])
 @cross_origin()
-def get_players():
-    game_id = request.form["gameId"]
-    print(game_id)
+def get_player():
+    game_id = request.args.get("gameId")
     players = g.db.execute("SELECT id, user_name FROM players WHERE game_id = ?", [game_id])
     players_list = [dict(id=row[0], user_name=row[1]) for row in players.fetchall()]
     return {"data": {"players": players_list}}
