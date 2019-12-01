@@ -52,27 +52,30 @@ def get_result():
 @cross_origin()
 def get_game():
     game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
-    if game_tuple[0] == None:
-        return redirect(url_for("create_game"))
-    else:
-        game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
-        return {"data": game_dict}
+    game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
+    return {"data": game_dict}
 
 
 @app.route("/game", methods=["POST"])
 @cross_origin()
 def create_game():
-    g.db.execute("INSERT INTO games(start_time) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')))")
-    g.db.commit()
-    game_tuple = g.db.execute("SELECT id, max(start_time) FROM games").fetchone()
-    game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
-    return {"data": {"game": game_dict}}
+    game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
+    if game_tuple[0] != None:
+        game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
+        return {"data": game_dict}
+    else:
+        g.db.execute("INSERT INTO games(start_time) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')))")
+        g.db.commit()
+        game_tuple = g.db.execute("SELECT id, max(start_time) FROM games").fetchone()
+        game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
+        return {"data": {"game": game_dict}}
 
 
 @app.route("/player", methods=["GET"])
 @cross_origin()
 def get_players():
     game_id = request.form["gameId"]
+    print(game_id)
     players = g.db.execute("SELECT id, user_name FROM players WHERE game_id = ?", [game_id])
     players_list = [dict(id=row[0], user_name=row[1]) for row in players.fetchall()]
     return {"data": {"players": players_list}}
