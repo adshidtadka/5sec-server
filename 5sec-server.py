@@ -45,7 +45,7 @@ def create_result():
 def get_result():
     results = g.db.execute("SELECT * FROM results ORDER BY score")
     results_list = [dict(id=row[0], game_id=row[1], user_name=row[2], score=row[3]) for row in results.fetchall()]
-    return {"resutls": results_list}
+    return {"status": 200, "resutls": results_list}
 
 
 @app.route("/game", methods=["GET"])
@@ -53,7 +53,7 @@ def get_result():
 def get_game():
     game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
     game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
-    return {"game": game_dict}
+    return {"status": 200, "game": game_dict}
 
 
 @app.route("/game", methods=["POST"])
@@ -62,13 +62,13 @@ def create_game():
     game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
     if game_tuple[0] != None:
         game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
-        return {"game": game_dict}
+        return {"status": 200, "game": game_dict}
     else:
         g.db.execute("INSERT INTO games(start_time) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')))")
         g.db.commit()
         game_tuple = g.db.execute("SELECT id, max(start_time) FROM games").fetchone()
         game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
-        return {"game": game_dict}
+        return {"status": 200, "game": game_dict}
 
 
 @app.route("/player", methods=["GET"])
@@ -77,7 +77,7 @@ def get_player():
     game_id = request.args.get("gameId")
     players = g.db.execute("SELECT id, user_name FROM players WHERE game_id = ?", [game_id])
     players_list = [dict(id=row[0], user_name=row[1]) for row in players.fetchall()]
-    return {"players": players_list}
+    return {"status": 200, "players": players_list}
 
 
 @app.route("/player", methods=["POST"])
@@ -87,7 +87,7 @@ def create_player():
     game_id = request.form["game_id"]
     g.db.execute("INSERT INTO players(game_id, user_name) VALUES (?, ?)", [game_id, user_name])
     g.db.commit()
-    return None
+    return {"status": 200}
 
 
 @app.before_request
