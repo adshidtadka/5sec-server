@@ -5,9 +5,9 @@ import configparser
 import sqlite3
 
 # configuration
-config = configparser.ConfigParser()
-config.read("config.ini")
-SERVER_NAME = config["DEFAULT"]["server_name"]
+# config = configparser.ConfigParser()
+# config.read("config.ini")
+SERVER_NAME = "0.0.0.0:5000"
 DEBUG = False
 DATABASE = "models/5sec-server.db"
 # SECRET_KEY = 'development key'
