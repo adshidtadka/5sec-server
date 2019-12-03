@@ -80,14 +80,14 @@ def update_result():
     score = request.form["score"]
     g.db.execute("UPDATE players SET score = ? WHERE game_id = ? AND user_name = ?", [score, game_id, user_name])
     g.db.commit()
-    return redirect(url_for("get_result", gameId=game_id))
+    return {"status": 200}
 
 
 @app.route("/result", methods=["GET"])
 @cross_origin()
 def get_result():
     game_id = request.args.get("gameId")
-    players = g.db.execute("SELECT id, user_name, score FROM players WHERE game_id = ? ORDER BY score", [game_id])
+    players = g.db.execute("SELECT id, user_name, score FROM players WHERE game_id = ? AND score NOT NULL ORDER BY score", [game_id])
     players_list = [dict(id=row[0], user_name=row[1], score=row[2]) for row in players.fetchall()]
     return {"status": 200, "players": players_list}
 
