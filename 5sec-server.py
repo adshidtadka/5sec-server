@@ -65,8 +65,8 @@ def get_player():
 @app.route("/player", methods=["POST"])
 @cross_origin()
 def create_player():
-    user_name = request.form["user_name"]
-    game_id = request.form["game_id"]
+    user_name = request.form["userName"]
+    game_id = request.form["gameId"]
     g.db.execute("INSERT INTO players(game_id, user_name) VALUES (?, ?)", [game_id, user_name])
     g.db.commit()
     return {"status": 200}
