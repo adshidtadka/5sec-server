@@ -78,7 +78,6 @@ def update_result():
     user_name = request.form["userName"]
     game_id = request.form["gameId"]
     score = request.form["score"]
-    print(request.form)
     g.db.execute("UPDATE players SET score = ? WHERE game_id = ? AND user_name = ?", [score, game_id, user_name])
     g.db.commit()
     return redirect(url_for("get_result", gameId=game_id))
