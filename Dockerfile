@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 RUN apt-get update
-RUN apt-get install python3 python3-pip -y
+RUN apt-get install python3 python3-pip curl -y
 
 RUN mkdir /app
 COPY . /app
