@@ -14,7 +14,7 @@ import requests
 args = sys.argv
 SERVER_NAME = "localhost:" + str(4000 + int(sys.argv[1]))
 DEBUG = False
-DATABASE = "models/5sec-server.db"
+DATABASE = "models/5sec-server_" + sys.argv[1] + ".db"
 # SECRET_KEY = 'development key'
 # USERNAME = 'admin'
 # PASSWORD = 'default'
@@ -46,11 +46,8 @@ def get_game():
 @app.route("/game", methods=["POST"])
 @cross_origin()
 def create_game():
-    game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
-    if game_tuple[0] != None:
-        game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
-        return {"status": 200, "game": game_dict}
-    else:
+    print(request.form)
+    if len(request.form) == 0:
         g.db.execute("INSERT INTO games(start_time) VALUES ((SELECT DATETIME(DATETIME('NOW', 'LOCALTIME'), '+5 SECONDS')))")
         g.db.commit()
         game_tuple = g.db.execute("SELECT id, max(start_time) FROM games").fetchone()
@@ -60,9 +57,13 @@ def create_game():
         with open("./allocation.json") as f:
             for server in json.load(f)["servers"]:
                 url = "http://" + server + "/game"
-                requests.post(url)
+                requests.post(url, data=game_dict)
 
         return {"status": 200, "game": game_dict}
+    else:
+        g.db.execute("INSERT INTO games(id, start_time) VALUES (?, ?)", [request.form["id"], request.form["start_time"]])
+        g.db.commit()
+        return {"status": 200}
 
 
 @app.route("/player", methods=["GET"])
