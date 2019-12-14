@@ -28,6 +28,15 @@ def init_db():
         db.commit()
 
 
+@app.route("/server_url", methods=["GET"])
+@cross_origin()
+def get_server_url():
+    user_name = request.args.get("userName")
+    with open("./allocation.json") as f:
+        server_url = json.load(f)[user_name]
+        return {"status": 200, "server_url": server_url}
+
+
 @app.route("/game", methods=["GET"])
 @cross_origin()
 def get_game():
