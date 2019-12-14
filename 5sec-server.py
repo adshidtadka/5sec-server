@@ -16,6 +16,8 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 CORS(app)
 
+allocation_path = "./networks/allocation_" + sys.argv[1] + ".json"
+
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -45,7 +47,7 @@ def create_game():
     game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
 
     # multicast
-    with open("./allocation.json") as f:
+    with open(allocation_path) as f:
         for server in json.load(f)["servers"]:
             url = "http://" + server + "/sync_game"
             requests.post(url, data=game_dict)
@@ -79,7 +81,7 @@ def create_player():
     g.db.commit()
 
     # multicast
-    with open("./allocation.json") as f:
+    with open(allocation_path) as f:
         for server in json.load(f)["servers"]:
             url = "http://" + server + "/sync_player"
             requests.post(url, data=request.form)
@@ -107,7 +109,7 @@ def update_result():
     g.db.commit()
 
     # multicast
-    with open("./allocation.json") as f:
+    with open(allocation_path) as f:
         for server in json.load(f)["servers"]:
             url = "http://" + server + "/sync_result"
             requests.post(url, data=request.form)
