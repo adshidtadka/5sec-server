@@ -1,23 +1,16 @@
 from flask import Flask, request, g, redirect, url_for
 from flask_cors import CORS, cross_origin
 from contextlib import closing
-import configparser
 import sqlite3
 import json
 import sys
 import os
 import requests
 
-# configuration
-# config = configparser.ConfigParser()
-# config.read("config.ini")
 args = sys.argv
 SERVER_NAME = "localhost:" + str(4000 + int(sys.argv[1]))
 DEBUG = False
 DATABASE = "models/5sec-server_" + sys.argv[1] + ".db"
-# SECRET_KEY = 'development key'
-# USERNAME = 'admin'
-# PASSWORD = 'default'
 
 app = Flask(__name__)
 app.config.from_object(__name__)

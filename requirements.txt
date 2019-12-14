@@ -1,4 +1,3 @@
 flask
 flask-cors
-configparser
 contextlib2
