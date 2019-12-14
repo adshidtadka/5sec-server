@@ -112,6 +112,24 @@ def update_result():
     score = request.form["score"]
     g.db.execute("UPDATE players SET score = ? WHERE game_id = ? AND user_name = ?", [score, game_id, user_name])
     g.db.commit()
+
+    # multicast
+    with open("./allocation.json") as f:
+        for server in json.load(f)["servers"]:
+            url = "http://" + server + "/sync_result"
+            requests.post(url, data=request.form)
+
+    return {"status": 200}
+
+
+@app.route('/sync_result', methods=["POST"])
+@cross_origin()
+def sync_result():
+    user_name = request.form["userName"]
+    game_id = request.form["gameId"]
+    score = request.form["score"]
+    g.db.execute("UPDATE players SET score = ? WHERE game_id = ? AND user_name = ?", [score, game_id, user_name])
+    g.db.commit()
     return {"status": 200}
 
 
