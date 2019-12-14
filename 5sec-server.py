@@ -86,11 +86,21 @@ def create_player():
     g.db.commit()
 
     # multicast
-    # with open("./allocation.json") as f:
-    #     for server in json.load(f)["servers"]:
-    #         url = "http://" + server + "/player"
-    #         requests.post(url, data=request.form)
+    with open("./allocation.json") as f:
+        for server in json.load(f)["servers"]:
+            url = "http://" + server + "/sync_player"
+            requests.post(url, data=request.form)
 
+    return {"status": 200}
+
+
+@app.route("/sync_player", methods=["POST"])
+@cross_origin()
+def sync_player():
+    user_name = request.form["userName"]
+    game_id = request.form["gameId"]
+    g.db.execute("INSERT INTO players(game_id, user_name) VALUES (?, ?)", [game_id, user_name])
+    g.db.commit()
     return {"status": 200}
 
 
