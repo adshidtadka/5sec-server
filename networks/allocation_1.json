@@ -1,4 +1,0 @@
-{
-  "servers": ["localhost:4002", "localhost:4003"],
-  "users": ["localhost:4001"]
-}
