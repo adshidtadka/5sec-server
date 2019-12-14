@@ -3,11 +3,12 @@ from flask_cors import CORS, cross_origin
 from contextlib import closing
 import configparser
 import sqlite3
+import json
 
 # configuration
 # config = configparser.ConfigParser()
 # config.read("config.ini")
-SERVER_NAME = "localhost:5000"
+SERVER_NAME = "localhost:4001"
 DEBUG = False
 DATABASE = "models/5sec-server.db"
 # SECRET_KEY = 'development key'
@@ -41,6 +42,8 @@ def get_game():
 @app.route("/game", methods=["POST"])
 @cross_origin()
 def create_game():
+    with open("./allocation.json") as f:
+        print(json.load(f)["servers"])
     game_tuple = g.db.execute("SELECT id, max(start_time) FROM games WHERE start_time >= (SELECT DATETIME('NOW', 'LOCALTIME'))").fetchone()
     if game_tuple[0] != None:
         game_dict = dict(id=game_tuple[0], start_time=game_tuple[1])
